@@ -1,0 +1,75 @@
+﻿@model BookDisplayModel 
+@{
+   }
+<div class=" my-2">
+<form asp-action="Index" class="row row-cols-lg-auto g-3 align-items-center">
+
+
+  <div class="col-12">
+    <label class="visually-hidden" for="genreId">Categorii</label>
+    <select class="form-select" id="genreId" name="genreId">
+      <option selected>Ctegorii</option>
+                @foreach(var genre in Model.Genres)
+                {
+                    <option selected="@(genre.Id==Model.GenreId)" value="@genre.Id">@genre.GenreName</option>
+                }
+    </select>
+  </div>
+
+        <div class="col-12">
+            <label class="visually-hidden" for="inlineFormInputGroupUsername">Cauta dupa titlu</label>
+            <div class="input-group">
+                <div class="input-group-text"></div>
+                <input type="text" class="form-control" value="@Model.STerm" id="sterm" name="sterm" placeholder="Cauta dupa titlu">
+            </div>
+        </div>
+
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary">Cautare</button>
+    <a href="/Home/Index" class="btn btn-dark">Resetare filtre</a>
+  </div>
+</form>
+</div>
+
+<div class="w-100 mt-4 d-flex flex-wrap">
+    @foreach (var book in Model.Books){
+<div class="card mx-3 mb-4" style="width: 11rem;">
+            @if (string.IsNullOrEmpty(book.Image))
+            {
+                
+            }
+            else
+            {
+                <img style="width:100%;height:200px" src="/images/@book.Image" class="card-img-top" alt="...">
+            }
+            <div class="card-body">
+        <h5 class="card-title">@book.BookName</h5>
+             <p class="card-text">
+             Categorie:@book.GenreName
+             </p>
+                <p>Autor:@book.AuthorName</p>
+                <p> Pret:@book.Price</p>
+        <button type="button" onclick="add(@book.Id)" class="btn btn-primary">Adauga in cos</button>
+    </div>
+</div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function add(bookId) {
+            try {
+                var response = await fetch(`/Cart/AddItem?bookId=${bookId}`);
+                if (response.status == 200) { 
+                var result = await response.json();
+                    var cartCountEl = document.getElementById("cartCount");
+                    cartCountEl.innerHTML = result;
+                }
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+    </script>
+}
